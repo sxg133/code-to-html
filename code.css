@@ -1,0 +1,24 @@
+table.code
+{
+}
+
+td.line-number
+{
+    border-right: medium green solid;
+    padding-right: 10px;
+}
+
+span.keyword
+{
+    color: Blue;
+}
+
+span.comment, span.comment span.str, span.comment span.keyword
+{
+    color: Green;
+}
+
+span.string
+{
+    color: Red;
+}
