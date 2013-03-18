@@ -3,9 +3,19 @@ import re
 class CodeConverter:
 	"""Convert code to HTML markup"""
 
+	def keyword_class():
+	    doc = "The CSS class of language keywords."
+	    def fget(self):
+	        return self._keyword_class
+	    def fset(self, value):
+	        self._keyword_class = value
+	    return locals()
+	keyword_class = property(**keyword_class())
+
 	def __init__(self, keyword_list, single_line_comment = "//", multi_line_comment="(/\*|\*/)"):
 		self.re_word = re.compile(r'[a-zA-Z0-9_]+')
 		self.re_keyword = re.compile('(' + '|'.join(keyword_list) + ')')
+		self.keyword_class = 'keyword'
 
 	def __check_token(self, token):
 		if token == ' ':
@@ -20,7 +30,7 @@ class CodeConverter:
 
 	def __check_word(self, word):
 		if self.re_keyword.match(word):
-			return '<span class="keyword">' + word + '</span>'
+			return '<span class="' + self.keyword_class + '">' + word + '</span>'
 		return word
 
 	def __parse_codeline(self, line, in_comment):
