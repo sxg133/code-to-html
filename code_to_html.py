@@ -12,10 +12,20 @@ class CodeConverter:
 	    return locals()
 	keyword_class = property(**keyword_class())
 
+	def string_class():
+	    doc = "The CSS class of string and character literals."
+	    def fget(self):
+	        return self._string_class
+	    def fset(self, value):
+	        self._string_class = value
+	    return locals()
+	string_class = property(**string_class())
+
 	def __init__(self, keyword_list, single_line_comment = "//", multi_line_comment="(/\*|\*/)"):
 		self.re_word = re.compile(r'[a-zA-Z0-9_]+')
 		self.re_keyword = re.compile('(' + '|'.join(keyword_list) + ')')
 		self.keyword_class = 'keyword'
+		self.string_class = 'string'
 
 	def __check_token(self, token):
 		if token == ' ':
@@ -66,7 +76,7 @@ class CodeConverter:
 							html.append(t + '</span>')
 							in_string = False
 					else:	# start of string
-						html.append('<span class="string">' + t)
+						html.append('<span class="' + self.string_class + '">' + t)
 						string_starter = t
 						in_string = True
 				elif t in ['/', '*']: 
