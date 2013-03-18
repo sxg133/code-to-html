@@ -39,6 +39,15 @@ class CodeConverter:
 	    return locals()
 	spaces_for_tabs = property(**spaces_for_tabs())
 
+	def show_line_numbers():
+	    doc = "Show or hide line numbers."
+	    def fget(self):
+	        return self._show_line_numbers
+	    def fset(self, value):
+	        self._show_line_numbers = value
+	    return locals()
+	show_line_numbers = property(**show_line_numbers())
+
 	def __init__(self, keyword_list, single_line_comment = "//", multi_line_comment="(/\*|\*/)"):
 		self.re_word = re.compile(r'[a-zA-Z0-9_]+')
 		self.re_keyword = re.compile('(' + '|'.join(keyword_list) + ')')
@@ -46,6 +55,7 @@ class CodeConverter:
 		self.string_class = 'string'
 		self.comment_class = 'comment'
 		self.spaces_for_tabs = 4
+		self.show_line_numbers = True
 
 	def __check_token(self, token):
 		if token == ' ':
@@ -129,7 +139,8 @@ class CodeConverter:
 		in_comment = False
 		for line_number,line in enumerate(code.split('\n')):
 			html += '<tr>'
-			html += '<td class="line-number">' + str(line_number) + '</td>'
+			if self.show_line_numbers:
+				html += '<td class="line-number">' + str(line_number) + '</td>'
 			html += '<td class="code">'
 			in_comment, html_line = self.__parse_codeline(line, in_comment)
 			html += html_line + '</td>'
