@@ -94,6 +94,7 @@ class CodeConverter:
 		return in_comment, "".join(html)
 
 	def convert_to_html(self, code):
+		"""Convert code to HTML markup and return as string."""
 		html = '<table class="code"><tbody>'
 		in_comment = False
 		for line_number,line in enumerate(code.split('\n')):
