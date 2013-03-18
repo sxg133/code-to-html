@@ -24,7 +24,7 @@ Create an instance of the CodeConverter class (it accepts a list of language key
 
 Pass the code (as a string) to the convert_to_html method:
 
-    c.convert_to_html(code)
+    code_html = c.convert_to_html(code)
 
 ### Properties
 
