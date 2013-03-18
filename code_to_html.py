@@ -21,17 +21,37 @@ class CodeConverter:
 	    return locals()
 	string_class = property(**string_class())
 
+	def comment_class():
+	    doc = "The CSS class of comment and character literals."
+	    def fget(self):
+	        return self._comment_class
+	    def fset(self, value):
+	        self._comment_class = value
+	    return locals()
+	comment_class = property(**comment_class())
+	
+	def spaces_for_tabs():
+	    doc = "The number of spaces to use to for tabs."
+	    def fget(self):
+	        return self._spaces_for_tabs
+	    def fset(self, value):
+	        self._spaces_for_tabs = value
+	    return locals()
+	spaces_for_tabs = property(**spaces_for_tabs())
+
 	def __init__(self, keyword_list, single_line_comment = "//", multi_line_comment="(/\*|\*/)"):
 		self.re_word = re.compile(r'[a-zA-Z0-9_]+')
 		self.re_keyword = re.compile('(' + '|'.join(keyword_list) + ')')
 		self.keyword_class = 'keyword'
 		self.string_class = 'string'
+		self.comment_class = 'comment'
+		self.spaces_for_tabs = 4
 
 	def __check_token(self, token):
 		if token == ' ':
 			return '&nbsp;'
 		elif token == '\t':
-			return '&nbsp;&nbsp;&nbsp;&nbsp;'
+			return '&nbsp;' * self.spaces_for_tabs
 		elif token == '<':
 			return '&lt;'
 		elif token == '>':
@@ -53,7 +73,7 @@ class CodeConverter:
 		single_line_comment = False
 
 		if in_comment:
-			html.append('<span class="comment">')
+			html.append('<span class="' + self.comment_class + '">')
 
 		for t in tokens:
 			match = self.re_word.match(t)
@@ -86,7 +106,7 @@ class CodeConverter:
 						in_comment = False
 						html.append(t + '</span>')
 					if in_comment:
-						html.append('<span class="comment">' + prev_t + t)
+						html.append('<span class="' + self.comment_class + '">' + prev_t + t)
 						single_line_comment = (t == '/')
 				else:
 					new_token = self.__check_token(t)
