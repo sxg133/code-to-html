@@ -22,13 +22,22 @@ class CodeConverter:
 	string_class = property(**string_class())
 
 	def comment_class():
-	    doc = "The CSS class of comment and character literals."
+	    doc = "The CSS class for comments."
 	    def fget(self):
 	        return self._comment_class
 	    def fset(self, value):
 	        self._comment_class = value
 	    return locals()
 	comment_class = property(**comment_class())
+
+	def line_number_class():
+	    doc = "The CSS class for line numbers."
+	    def fget(self):
+	        return self._line_number_class
+	    def fset(self, value):
+	        self._line_number_class = value
+	    return locals()
+	line_number_class = property(**line_number_class())
 	
 	def spaces_for_tabs():
 	    doc = "The number of spaces to use to for tabs."
@@ -56,6 +65,7 @@ class CodeConverter:
 		self.comment_class = 'comment'
 		self.spaces_for_tabs = 4
 		self.show_line_numbers = True
+		self.line_number_class = 'line-number'
 
 	def __check_token(self, token):
 		if token == ' ':
@@ -140,7 +150,7 @@ class CodeConverter:
 		for line_number,line in enumerate(code.split('\n')):
 			html += '<tr>'
 			if self.show_line_numbers:
-				html += '<td class="line-number">' + str(line_number) + '</td>'
+				html += '<td class="' + self.line_number_class + '">' + str(line_number) + '</td>'
 			html += '<td class="code">'
 			in_comment, html_line = self.__parse_codeline(line, in_comment)
 			html += html_line + '</td>'
