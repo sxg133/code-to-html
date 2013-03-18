@@ -100,12 +100,14 @@ class CodeConverter:
 			if match:
 				word.append(t)
 			else:
+
 				if word:	# end of a new word
 					new_word = ''.join(word)
 					if not (in_string or in_comment):
 						new_word = self.__check_word(new_word)	# is the word a keyword?
 					html.append(new_word)
 					word = list()
+
 				if t in ['"', "'"] and not in_comment:
 					if in_string:
 						if string_starter != t:
@@ -120,9 +122,9 @@ class CodeConverter:
 						string_starter = t
 						in_string = True
 				elif t in ['/', '*']: 
-					if prev_t == '/':
+					if prev_t == '/':	# starting single-line comment
 						in_comment = True
-					elif t == '/' and prev_t == '*':
+					elif t == '/' and prev_t == '*':	# ending block comment
 						in_comment = False
 						html.append(t + '</span>')
 					if in_comment:
@@ -131,6 +133,7 @@ class CodeConverter:
 				else:
 					new_token = self.__check_token(t)
 					html.append(new_token)
+			
 			prev_t = t
 
 		# check word one last time because end of line token isn't picked up
