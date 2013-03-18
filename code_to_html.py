@@ -40,7 +40,7 @@ class CodeConverter:
 	line_number_class = property(**line_number_class())
 	
 	def spaces_for_tabs():
-	    doc = "The number of spaces to use to for tabs."
+	    doc = "The number of spaces to use for tabs."
 	    def fget(self):
 	        return self._spaces_for_tabs
 	    def fset(self, value):
