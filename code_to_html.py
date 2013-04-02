@@ -164,7 +164,8 @@ class CodeConverter:
 					if in_comment:
 						html.append('<span class="' + self.comment_class + '">' + prev_t + t)
 						single_line_comment = self.__is_single_line_comment(t)
-						
+
+				# this handles a comment character that wasn't used for a comment (gets skipped on previous iteration)
 				elif self.__is_comment_character(prev_t) and not in_comment and not self.__is_comment_symbol(prev_t, t):
 					new_token = self.__check_token(prev_t) + self.__check_token(t)
 					html.append(new_token)
