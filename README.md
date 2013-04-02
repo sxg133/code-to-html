@@ -7,7 +7,7 @@ Date:   2013-02-18
 
 A python module for converting code snippets to HTML markup.
 
-*Currently only supports c-like languages.
+*Works best with C-like languages.
 
 Documentation
 -------------

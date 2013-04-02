@@ -1,5 +1,8 @@
 import re
 
+class CommentStyle:
+	SCRIPT, C = range(2)
+
 class CodeConverter:
 	"""Convert code to HTML markup"""
 
@@ -57,6 +60,15 @@ class CodeConverter:
 	    return locals()
 	show_line_numbers = property(**show_line_numbers())
 
+	def comment_style():
+	    doc = "Set language comment style (c or script)"
+	    def fget(self):
+	        return self._comment_style
+	    def fset(self, value):
+	        self._comment_style = value
+	    return locals()
+	comment_style = property(**comment_style())
+
 	def __init__(self, keyword_list, single_line_comment = "//", multi_line_comment="(/\*|\*/)"):
 		self.re_word = re.compile(r'[a-zA-Z0-9_]+')
 		self.re_keyword = re.compile('(' + '|'.join(keyword_list) + ')')
@@ -66,6 +78,7 @@ class CodeConverter:
 		self.spaces_for_tabs = 4
 		self.show_line_numbers = True
 		self.line_number_class = 'line-number'
+		self.comment_style = CommentStyle.C
 
 	def __check_token(self, token):
 		if token == ' ':
@@ -82,6 +95,25 @@ class CodeConverter:
 		if self.re_keyword.match(word):
 			return '<span class="' + self.keyword_class + '">' + word + '</span>'
 		return word
+
+	def __is_start_comment(self, t, prev_t):
+		return (prev_t == '/' and t in ['/', '*'] and self.comment_style == CommentStyle.C) or (t == '#' and self.comment_style == CommentStyle.SCRIPT)
+
+	def __is_end_comment(self, t, prev_t):
+		return t == '/' and prev_t == '*' and self.comment_style == CommentStyle.C
+
+	def __is_single_line_comment(self, t):
+		return (t == '/' and self.comment_style == CommentStyle.C) or (t == '#' and self.comment_style == CommentStyle.SCRIPT)
+
+	def __is_comment_character(self, t):
+		return (t in ['/', '*'] and self.comment_style == CommentStyle.C) or (t == '#' and self.comment_style == CommentStyle.SCRIPT)
+
+	def __is_comment_symbol(self, prev_t, t):
+		if t == '#' and self.comment_style == CommentStyle.SCRIPT:
+			return True
+
+		symbol = prev_t + t
+		return symbol in ['/*', '*/', '//']
 
 	def __parse_codeline(self, line, in_comment):
 		tokens = list(line)
@@ -120,16 +152,23 @@ class CodeConverter:
 					else:	# start of string
 						html.append('<span class="' + self.string_class + '">' + t)
 						string_starter = t
-						in_string = True
-				elif t in ['/', '*']: 
-					if prev_t == '/':	# starting single-line comment
+						in_string = True 
+
+				elif self.__is_comment_character(t):
+					if self.__is_start_comment(t, prev_t):
 						in_comment = True
-					elif t == '/' and prev_t == '*':	# ending block comment
+					elif self.__is_end_comment(t, prev_t):
 						in_comment = False
 						html.append(t + '</span>')
+
 					if in_comment:
 						html.append('<span class="' + self.comment_class + '">' + prev_t + t)
-						single_line_comment = (t == '/')
+						single_line_comment = self.__is_single_line_comment(t)
+						
+				elif self.__is_comment_character(prev_t) and not in_comment and not self.__is_comment_symbol(prev_t, t):
+					new_token = self.__check_token(prev_t) + self.__check_token(t)
+					html.append(new_token)
+
 				else:
 					new_token = self.__check_token(t)
 					html.append(new_token)
