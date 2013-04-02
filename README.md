@@ -51,3 +51,7 @@ Pass the code (as a string) to the convert_to_html method:
 *	show_line_numbers
 
 	 Show or hide line numbers.
+
+*	comment_style
+
+	CommentStyle.C for c-like comments (//, /*) or CommentStyle.SCRIPT for # comments.
